@@ -6,6 +6,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 
+import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 
 /**
@@ -18,7 +20,9 @@ public class MainController {
     String first;
     String second;
     char znak;
-
+    public ArrayList<String> list;
+    public PrintWriter writer;
+    public BufferedReader reader;
 
 
     public void two(ActionEvent actionEvent) {
@@ -101,19 +105,46 @@ public class MainController {
 
     }
 
-    public void ravno(ActionEvent actionEvent) {
+    public void ravno(ActionEvent actionEvent) throws IOException {
         second= String.valueOf(str);
         str.delete(0,str.length());
-        Calc c=new Calc(first,second);
-        switch (znak){
-            case '+': {field.setText(String.valueOf(c.plus()));break;}
-            case '-':{field.setText(String.valueOf(c.minus()));break;}
-            case '*':{field.setText(String.valueOf(c.umn()));break;}
-            case '/':{field.setText(String.valueOf(c.del()));break;}
+        Calc c=new Calc(first,second,znak);
+        setUpNetworking(c);
+    }
+
+    private void setUpNetworking (Calc c){
+        Socket sock= null;
+        list=new ArrayList<String>();
+        Thread th =new Thread(new IncomingRead());
+         th.start();
+        try {
+
+            sock = new Socket("127.0.0.1", 8080);
+            writer =new PrintWriter(sock.getOutputStream());
+            ObjectOutputStream oos=new ObjectOutputStream(sock.getOutputStream());
+            oos.writeObject(c);
+
+            oos.close();
+            InputStreamReader streamReader=new InputStreamReader(sock.getInputStream());
+            reader =new BufferedReader(streamReader);
+            System.out.println("связь установлена");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-
-
-
+    }
+    private class IncomingRead implements Runnable{
+        public void run(){
+            String msg;
+            try {
+                while ((msg=reader.readLine())!=null)
+                {
+                    field.setText(msg);
+                    list.add(msg);
+                    System.out.println(msg);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

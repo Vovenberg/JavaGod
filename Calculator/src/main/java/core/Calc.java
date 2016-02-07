@@ -6,11 +6,13 @@ package core;
 public class Calc {
     Double one;
     Double two;
+    char z;
 
-
-    public Calc(String one, String two) {
+    public Calc(String one, String two,char z) {
         this.one = Double.valueOf(one);
         this.two = Double.valueOf(two);
+        this.z=z;
+
 
     }
 

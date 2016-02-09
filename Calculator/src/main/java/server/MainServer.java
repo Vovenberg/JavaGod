@@ -1,8 +1,11 @@
 package server;
 
-import core.*;
+import interfaces.InterfaceCalc;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -11,17 +14,18 @@ import java.util.ArrayList;
  * Created by Владимир on 07.02.2016.
  */
 public class MainServer {
-ArrayList outputList;
+    ArrayList outputList;
+
     public void init() throws IOException {
-        ServerSocket ss=new ServerSocket(8000);
+        ServerSocket ss = new ServerSocket(8000);
         System.out.println("устанавливаем соединение");
-        while (true){
-            Socket socket=ss.accept();
-            PrintWriter pw=new PrintWriter(socket.getOutputStream());
-            outputList=new ArrayList();
+        while (true) {
+            Socket socket = ss.accept();
+            PrintWriter pw = new PrintWriter(socket.getOutputStream());
+            outputList = new ArrayList();
             outputList.add(pw);
 
-             Thread t=new Thread(new ClientHandler (socket));
+            Thread t = new Thread(new ClientHandler(socket));
             t.start();
 
         }
@@ -29,14 +33,15 @@ ArrayList outputList;
     }
 
 
-    public class ClientHandler implements Runnable{
+    public class ClientHandler implements Runnable {
         BufferedReader reader;
-        Calc call=null;
-        public ClientHandler(Socket sock){
-            Socket clientSock=sock;
+        InterfaceCalc call = null;
+
+        public ClientHandler(Socket sock) {
+            Socket clientSock = sock;
             try {
-                ObjectInputStream ois=new ObjectInputStream(clientSock.getInputStream());
-                Calc call= (Calc) ois.readObject();
+                ObjectInputStream ois = new ObjectInputStream(clientSock.getInputStream());
+                call = (InterfaceCalc) ois.readObject();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -45,8 +50,8 @@ ArrayList outputList;
         }
 
         public void run() {
-            Double d=call.schet();
-            for (int i=0;i<outputList.size() ;i++ ) {
+            Double d = call.schet();
+            for (int i = 0; i < outputList.size(); i++) {
                 PrintWriter writer = (PrintWriter) outputList.get(i);
                 writer.println(d);
                 writer.flush();

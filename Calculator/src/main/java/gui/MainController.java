@@ -119,8 +119,7 @@ public class MainController {
          th.start();
         try {
 
-            sock = new Socket("127.0.0.1", 8080);
-            writer =new PrintWriter(sock.getOutputStream());
+            sock = new Socket("127.0.0.1", 8000);
             ObjectOutputStream oos=new ObjectOutputStream(sock.getOutputStream());
             oos.writeObject(c);
 

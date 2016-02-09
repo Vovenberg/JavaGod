@@ -1,11 +1,11 @@
-package core;
+package server;
 
 import java.io.Serializable;
 
 /**
  * Created by Владимир on 06.02.2016.
  */
-public class Calc implements Serializable{
+public class Calc implements Serializable {
     Double one;
     Double two;
     char z;
@@ -17,6 +17,7 @@ public class Calc implements Serializable{
 
 
     }
+
     public double schet() {
         Double d=null;
         switch (z){
@@ -28,7 +29,6 @@ public class Calc implements Serializable{
 
         return d;
     }
-
 
     public double plus (){return one+two;}
     public double minus (){return one-two;}

@@ -1,0 +1,8 @@
+Main.class
+server\Calc.class
+server\MainServer$ClientHandler.class
+server\MainServer.class
+core\Calc.class
+gui\MainController.class
+gui\MainController$IncomingRead.class
+gui\MainController$1.class

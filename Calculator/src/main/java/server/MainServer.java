@@ -1,11 +1,10 @@
 package server;
 
+import com.sun.corba.se.impl.io.IIOPOutputStream;
+import com.sun.corba.se.impl.orbutil.ObjectWriter;
 import interfaces.InterfaceCalc;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -14,53 +13,58 @@ import java.util.ArrayList;
  * Created by Владимир on 07.02.2016.
  */
 public class MainServer {
-    ArrayList outputList;
+    private ArrayList<OutputStream> outputList;
+    private int serverPort = 8000;
 
-    public void init() throws IOException {
-        ServerSocket ss = new ServerSocket(8000);
+    public void init() throws IOException{
+        ServerSocket ss = new ServerSocket(serverPort);
         System.out.println("устанавливаем соединение");
+        outputList = new ArrayList<>();
         while (true) {
             Socket socket = ss.accept();
-            PrintWriter pw = new PrintWriter(socket.getOutputStream());
-            outputList = new ArrayList();
-            outputList.add(pw);
-
+            OutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+            outputList.add(outputStream);
             Thread t = new Thread(new ClientHandler(socket));
             t.start();
-
         }
-
     }
 
-
     public class ClientHandler implements Runnable {
-        BufferedReader reader;
-        InterfaceCalc call = null;
+        private Socket sock;
+        private InterfaceCalc call = null;
 
         public ClientHandler(Socket sock) {
-            Socket clientSock = sock;
+            this.sock = sock;
             try {
-                ObjectInputStream ois = new ObjectInputStream(clientSock.getInputStream());
+                ObjectInputStream ois = new ObjectInputStream(this.sock.getInputStream());
                 call = (InterfaceCalc) ois.readObject();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
+            }  catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         public void run() {
-            Double d = call.schet();
-            for (int i = 0; i < outputList.size(); i++) {
-                PrintWriter writer = (PrintWriter) outputList.get(i);
-                writer.println(d);
-                writer.flush();
+            if (call!=null){
+                Double d = call.schet();
+                for (OutputStream os : outputList){
+                    try(ObjectOutputStream outputStream = new ObjectOutputStream(os)){
+                        outputStream.writeObject(d);
+                        outputStream.flush();
+                    }catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
+            System.err.println("переданный объект - null");
         }
     }
 
 
-    public static void main(String[] args) throws IOException {
-        new MainServer().init();
+    public static void main(String[] args){
+        try {
+            new MainServer().init();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

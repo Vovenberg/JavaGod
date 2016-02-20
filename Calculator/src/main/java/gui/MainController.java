@@ -16,11 +16,13 @@ import java.util.ArrayList;
  */
 public class MainController {
     @FXML
-    TextField field;
+    private TextField field;
+
     StringBuilder str = new StringBuilder(8);
     String first;
     String second;
     char znak;
+
     public ArrayList<String> list;
     public PrintWriter writer;
     public BufferedReader reader;

@@ -115,19 +115,14 @@ public class MainController {
     }
 
     private void setUpNetworking(InterfaceCalc c) {
-        Socket sock = null;
         list = new ArrayList<String>();
         Thread th = new Thread(new IncomingRead());
         th.start();
-        try {
-
-            sock = new Socket("127.0.0.1", 8000);
-            ObjectOutputStream oos = new ObjectOutputStream(sock.getOutputStream());
-            oos.writeObject(c);
-
-            oos.close();
-            InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
-            reader = new BufferedReader(streamReader);
+        try(Socket sock = new Socket("127.0.0.1", 8000)) {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(sock.getOutputStream());
+            reader = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+            objectOutputStream.writeObject(c);
+            objectOutputStream.flush();
             System.out.println("связь установлена");
         } catch (IOException e) {
             e.printStackTrace();

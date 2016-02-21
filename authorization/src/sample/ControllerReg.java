@@ -1,8 +1,5 @@
 package sample;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableArray;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,8 +9,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import sample.model.User;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -42,7 +39,7 @@ public class ControllerReg extends Main {
                 new DataBase().Insert(log.getText(), par.getText());
 
 
-                Parent root= FXMLLoader.load(getClass().getResource("main.fxml"));
+                Parent root= FXMLLoader.load(getClass().getResource("view/main.fxml"));
                 Scene scene=new Scene(root,300,275);
                 Node source=(Node)actionEvent.getSource();
                 Stage st=(Stage) source.getScene().getWindow();
@@ -64,7 +61,7 @@ public class ControllerReg extends Main {
         Boolean b=true;
         //SimpleStringProperty ss=new SimpleStringProperty(str);
         for (User u :list) {
-            if (u.login.equals(str))
+            if (u.getLogin().equals(str))
             { b=false;
 
                 break;}
@@ -78,7 +75,7 @@ public class ControllerReg extends Main {
 
     private void modalWindowpol() throws IOException {
         Stage st=new Stage ();
-        Parent root= FXMLLoader.load(getClass().getResource("pol.fxml"));
+        Parent root= FXMLLoader.load(getClass().getResource("view/pol.fxml"));
         Scene scene=new Scene(root);
         st.setTitle("Регистрация");
         st.setResizable(false);
@@ -89,7 +86,7 @@ public class ControllerReg extends Main {
     }
     private void modalWindowsucks() throws IOException {
         Stage st=new Stage ();
-        Parent root= FXMLLoader.load(getClass().getResource("sucks.fxml"));
+        Parent root= FXMLLoader.load(getClass().getResource("view/sucks.fxml"));
         Scene scene=new Scene(root);
         st.setTitle("Регистрация");
         st.setResizable(false);
@@ -103,7 +100,7 @@ public class ControllerReg extends Main {
 
     public void modalWindowpar() throws IOException {
         Stage st=new Stage ();
-        Parent root= FXMLLoader.load(getClass().getResource("par.fxml"));
+        Parent root= FXMLLoader.load(getClass().getResource("view/par.fxml"));
         Scene scene=new Scene(root);
         st.setTitle("Регистрация");
         st.setResizable(false);
@@ -114,7 +111,7 @@ public class ControllerReg extends Main {
     }
 
     public void back(ActionEvent actionEvent) throws IOException {
-        Parent root= FXMLLoader.load(getClass().getResource("main.fxml"));
+        Parent root= FXMLLoader.load(getClass().getResource("view/main.fxml"));
         Scene scene=new Scene(root,300,275);
         Node source=(Node)actionEvent.getSource();
         Stage st=(Stage) source.getScene().getWindow();

@@ -7,32 +7,33 @@ import java.io.Serializable;
 /**
  * Created by Владимир on 06.02.2016.
  */
-public class Calc implements Serializable, InterfaceCalc{
-    Double one;
-    Double two;
-    char z;
+public class Calc implements Serializable, InterfaceCalc {
+    private Double one;
+    private Double two;
+    private EnamZnak z;
 
-    public Calc(String one, String two, char z) {
+    public Calc(String one, String two, EnamZnak z) {
         this.one = Double.valueOf(one);
         this.two = Double.valueOf(two);
         this.z = z;
-
-
     }
 
     public double schet() {
         Double d = null;
         switch (z) {
-            case '+': {
+            case PLUS: {
                 d = plus();
             }
-            case '-': {
+            break;
+            case MINUS: {
                 d = minus();
             }
-            case '*': {
+            break;
+            case MULT: {
                 d = umn();
             }
-            case '/': {
+            break;
+            case DIVIDE: {
                 d = del();
             }
         }

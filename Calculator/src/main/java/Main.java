@@ -4,6 +4,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
 import java.io.IOException;
 
 /**
@@ -17,15 +18,16 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        primaryStage.setTitle("Calculator");
         FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(this.getClass().getResource("gui/main.fxml"));
         Parent p = null;
         try {
-            p = loader.load(getClass().getResource("fxml/main.fxml"));
+            p = loader.load();
         } catch (IOException e) {
             e.getStackTrace();
         }
-        Scene sc = new Scene(p);
-        primaryStage.setScene(sc);
+        primaryStage.setScene(new Scene(p));
         primaryStage.show();
     }
 }

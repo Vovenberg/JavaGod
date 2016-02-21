@@ -1,66 +1,68 @@
 package server;
 
-import com.sun.corba.se.impl.io.IIOPOutputStream;
-import com.sun.corba.se.impl.orbutil.ObjectWriter;
-import interfaces.InterfaceCalc;
+import core.Calc;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Владимир on 07.02.2016.
  */
 public class MainServer {
-    private ArrayList<OutputStream> outputList;
+    private Map<Socket, OutputStream> outputList;
     private int serverPort = 8000;
 
-    public void init() throws IOException{
+    public void init() throws IOException {
         ServerSocket ss = new ServerSocket(serverPort);
         System.out.println("устанавливаем соединение");
-        outputList = new ArrayList<>();
+        outputList = new HashMap<>();
         while (true) {
             Socket socket = ss.accept();
-            OutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            outputList.add(outputStream);
             Thread t = new Thread(new ClientHandler(socket));
+            OutputStream outputStream = socket.getOutputStream();
+            outputList.put(socket, outputStream);
             t.start();
         }
     }
 
     public class ClientHandler implements Runnable {
         private Socket sock;
-        private InterfaceCalc call = null;
+        private Calc call = null;
 
         public ClientHandler(Socket sock) {
             this.sock = sock;
-            try {
-                ObjectInputStream ois = new ObjectInputStream(this.sock.getInputStream());
-                call = (InterfaceCalc) ois.readObject();
-            }  catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
         public void run() {
-            if (call!=null){
-                Double d = call.schet();
-                for (OutputStream os : outputList){
-                    try(ObjectOutputStream outputStream = new ObjectOutputStream(os)){
-                        outputStream.writeObject(d);
-                        outputStream.flush();
-                    }catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
+            try {
+                ObjectInput ois = new ObjectInputStream(new BufferedInputStream(this.sock.getInputStream()));
+                call = (Calc) ois.readObject();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            System.err.println("переданный объект - null");
+            if (call != null) {
+                System.out.println("переданный объект - не null");
+                Double d = call.schet();
+                BufferedOutputStream os = new BufferedOutputStream(outputList.get(sock));
+                try {
+                    ObjectOutputStream objectOutput = new ObjectOutputStream(os);
+                    String string = String.valueOf(d);
+                    objectOutput.writeObject(string);
+                    objectOutput.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("переданный объект - null");
+            }
         }
     }
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
             new MainServer().init();
         } catch (IOException e) {

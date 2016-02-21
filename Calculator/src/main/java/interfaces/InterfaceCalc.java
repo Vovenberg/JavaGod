@@ -10,4 +10,5 @@ public interface InterfaceCalc {
     double umn();
 
     double del();
+
 }
